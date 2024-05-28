@@ -4,11 +4,7 @@ Yarn Spinner is licensed to you under the terms found in the file LICENSE.md.
 
 using System.Collections.Generic;
 using UnityEditor;
-#if UNITY_2020_2_OR_NEWER
 using UnityEditor.AssetImporters;
-#else
-using UnityEditor.Experimental.AssetImporters;
-#endif
 using UnityEngine;
 using System.Linq;
 using Yarn.Compiler;
@@ -147,21 +143,15 @@ namespace Yarn.Unity.Editor
 
                 var locInfo = new Project.LocalizationInfo();
 
-                if (stringFile != null) {
+                if (stringFile != null)
+                {
                     string stringFilePath = AssetDatabase.GetAssetPath(stringFile);
-#if UNITY_2021
                     locInfo.Strings = Path.GetRelativePath(importerFolder, stringFilePath);
-#else
-                    locInfo.Strings = YarnProjectImporter.UnityProjectRootVariable + "/" + stringFilePath;
-#endif
                 }
-                if (assetFolder != null) {
+                if (assetFolder != null)
+                {
                     string assetFolderPath = AssetDatabase.GetAssetPath(assetFolder);
-#if UNITY_2021
                     locInfo.Assets = Path.GetRelativePath(importerFolder, assetFolderPath);
-#else
-                    locInfo.Assets = YarnProjectImporter.UnityProjectRootVariable + "/" + assetFolderPath;
-#endif
                 }
 
                 data.Localisation[locField.value.languageID] = locInfo;

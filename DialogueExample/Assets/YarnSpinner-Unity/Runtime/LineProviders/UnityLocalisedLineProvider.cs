@@ -15,7 +15,6 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement;
 using UnityEngine.Localization.Metadata;
-
 #endif
 
 #if UNITY_EDITOR
@@ -322,7 +321,8 @@ namespace Yarn.Unity.UnityLocalization
     }
 
 #if USE_UNITY_LOCALIZATION
-    public class LineMetadata : IMetadata {
+    public class LineMetadata : IMetadata
+    {
         public string nodeName;
         public string[] tags;
     }
@@ -355,11 +355,11 @@ namespace Yarn.Unity.UnityLocalization
         }
         public void OnEnable()
         {
-            #if USE_UNITY_LOCALIZATION
+#if USE_UNITY_LOCALIZATION
             this.stringsTableProperty = serializedObject.FindProperty(nameof(UnityLocalisedLineProvider.stringsTable));
             this.assetTableProperty = serializedObject.FindProperty(nameof(UnityLocalisedLineProvider.assetTable));
             this.automaticAssetUnloadingProperty = serializedObject.FindProperty(nameof(UnityLocalisedLineProvider.AutomaticallyUnloadUnusedLineAssets));
-            #endif
+#endif
         }
     }
 #endif

@@ -5,11 +5,7 @@ Yarn Spinner is licensed to you under the terms found in the file LICENSE.md.
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
-#if UNITY_2020_2_OR_NEWER
 using UnityEditor.AssetImporters;
-#else
-using UnityEditor.Experimental.AssetImporters;
-#endif
 
 namespace Yarn.Unity.Editor
 {

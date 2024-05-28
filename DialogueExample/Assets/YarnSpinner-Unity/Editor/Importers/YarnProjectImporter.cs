@@ -4,11 +4,7 @@ Yarn Spinner is licensed to you under the terms found in the file LICENSE.md.
 
 using System.Collections.Generic;
 using UnityEditor;
-#if UNITY_2020_2_OR_NEWER
 using UnityEditor.AssetImporters;
-#else
-using UnityEditor.Experimental.AssetImporters;
-#endif
 using UnityEngine;
 using System.Linq;
 using Yarn.Compiler;
@@ -21,7 +17,7 @@ using UnityEngine.Localization.Tables;
 
 namespace Yarn.Unity.Editor
 {
-    [ScriptedImporter(5, new[] { "yarnproject" }, 1), HelpURL("https://yarnspinner.dev/docs/unity/components/yarn-programs/")]
+    [ScriptedImporter(5, new[] { "yarnproject" }, 1000), HelpURL("https://yarnspinner.dev/docs/unity/components/yarn-programs/")]
     [InitializeOnLoad]
     public class YarnProjectImporter : ScriptedImporter
     {
@@ -101,9 +97,11 @@ namespace Yarn.Unity.Editor
                 var project = Project.LoadFromFile(this.assetPath);
                 var scriptFile = yarnImporter.assetPath;
 
+                var scriptFileWithEnvironmentSeparators = string.Join(System.IO.Path.DirectorySeparatorChar, scriptFile.Split('/'));
+
                 var projectRelativeSourceFiles = project.SourceFiles.Select(GetRelativePath);
 
-                return projectRelativeSourceFiles.Contains(scriptFile);
+                return projectRelativeSourceFiles.Contains(scriptFileWithEnvironmentSeparators);
             }
             catch
             {
@@ -336,6 +334,53 @@ namespace Yarn.Unity.Editor
 #endif
         }
 
+        /// <summary>
+        /// Checks if the modifications on the Asset Database will necessitate a reimport of the project to stay in sync with the localisation assets.
+        /// </summary>
+        /// <remarks>
+        /// Because assets can be added and removed after associating a folder of assets with a locale modifications won't be detected until runtime when they cause an error.
+        /// This is bad for many reasons, so this method will check any modified assets and see if they correspond to this Yarn Project.
+        /// If they do it will reimport the project to reassociate them.
+        /// </remarks>
+        /// <param name="modifiedAssetPaths">The list of asset paths that have been modified, that is to say assets that have been added, removed, or moved.</param>
+        public void CheckUpdatedAssetsRequireReimport(List<string> modifiedAssetPaths)
+        {
+            bool needsReimport = false;
+
+            var comparison = System.StringComparison.CurrentCulture;
+            if (Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor)
+            {
+                comparison = System.StringComparison.OrdinalIgnoreCase;
+            }
+
+            var localeAssetFolderPaths = ImportData.localizations.Where(l => l.assetsFolder != null).Select(l => AssetDatabase.GetAssetPath(l.assetsFolder));
+            foreach (var path in localeAssetFolderPaths)
+            {
+                // we need to ensure we have the trailing seperator otherwise it is to be considered a file
+                // and files can never be the parent of another file
+                var assetPath = path;
+                if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
+                {
+                    assetPath += Path.DirectorySeparatorChar.ToString();
+                }
+
+                foreach (var modified in modifiedAssetPaths)
+                {
+                    if (modified.StartsWith(assetPath, comparison))
+                    {
+                        needsReimport = true;
+                        goto SHORTCUT;
+                    }
+                }
+            }
+
+            SHORTCUT:
+            if (needsReimport)
+            {
+                AssetDatabase.ImportAsset(this.assetPath);
+            }
+        }
+
         internal static string GetRelativePath(string path)
         {
             if (path.StartsWith(UnityProjectRootPath) == false)
@@ -565,8 +610,6 @@ namespace Yarn.Unity.Editor
                         tags = RemoveLineIDFromMetadata(stringInfo.metadata).ToArray(),
                     });
                 }
-
-                
 
                 // We've made changes to the table, so flag it and its shared
                 // data as dirty.

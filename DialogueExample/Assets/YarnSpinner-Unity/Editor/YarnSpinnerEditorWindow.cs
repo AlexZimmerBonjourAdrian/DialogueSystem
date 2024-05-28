@@ -114,12 +114,7 @@ namespace Yarn.Unity
 
             EditorApplication.update -= EditorUpdate;
 
-            bool isError;
-#if UNITY_2020_1_OR_NEWER
-            isError = supportersRequest.result != UnityWebRequest.Result.Success;
-#else
-            isError = supportersRequest.isNetworkError || supportersRequest.isHttpError;
-#endif
+            bool isError = supportersRequest.result != UnityWebRequest.Result.Success;
         
             if (isError)
             {

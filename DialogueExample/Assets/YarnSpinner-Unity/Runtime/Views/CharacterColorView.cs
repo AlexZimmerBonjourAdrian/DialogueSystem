@@ -8,7 +8,7 @@ using UnityEngine;
 #if USE_TMP
 using TMPro;
 #else
-using TextMeshProUGUI = TMPShim;
+using TextMeshProUGUI = Yarn.Unity.TMPShim;
 #endif
 
 namespace Yarn.Unity

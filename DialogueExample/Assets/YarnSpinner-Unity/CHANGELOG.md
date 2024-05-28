@@ -10,9 +10,64 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
-- Fixed a bug where line pauses could sometimes not happen when the user's framerate is low.
+- Fixed an issue where, on Windows, projects would fail to automatically update when a file that belonged to them was created or edited.
 
 ### Removed
+
+## [2.4.2] 2024-02-24
+
+### Added
+
+- Added a Unity Project scoped settings that allows you to override some of the default behaviours of Yarn Spinner.
+  - Yarn Spinner settings are saved to the path `ProjectSettings\Packages\dev.yarnspinner\YarnSpinnerProjectSettings.json`.
+  - The settings be changed in the Project Settings window, by choosing `Edit -> Project Settings -> Yarn Spinner`.
+  - The setting currently supports three convenience features of Yarn Spinner:
+    - Automatically associating assets with localisations
+    - Automatically linking `YarnCommand` and `YarnFunction` attributed methods to the Dialogue Runner.
+    - Generating a `.ysls.json` file that stores information about your Yarn attributed methods.
+      - This file is saved to `ProjectSettings\Packages\dev.yarnspinner\generated.ysls.json`.
+      - This is an experimental feature to support better editor integration down the line. As such, this feature defaults to 'off'. 
+  - Enabling or disabling `YarnCommand` and `YarnFunction` linking, or `.ysls` generation, will cause your project to recompile.
+  - Enabling or disabling asset linking will cause a reimport of all `yarnproject` assets.
+- `Yarn.Unity.ActionAnalyser.Action` now has a `MethodIdentifierName` property, which is the short form of the method name.
+- `DialogueAdvanceInput` now supports Virtual Button names in addition to KeyCodes and Input Actions.
+  - This can be configured to work on button or key release or press. By default, the component works on release.
+- `LineView` now will add in line breaks when it encounters a self closing `[br /]` marker.
+- Yarn attributed Functions and Commands can now use constant values in addition to literals for their name.
+
+### Changed
+
+- Update the minimum Unity version to 2021.3.
+- Fixed a bug where line pauses could sometimes not happen when the user's framerate is low.
+- Fixed a bug where the Rounded Views sample wouldn't import correctly.
+- Fixed Minimal Dialogue Runner sample that was using obsolete methods.
+- Fixed a bug where TMPShim wasn't being detected.
+- Standard library functions (like `random`, `dice`, `round_places`, etc) have been moved to the core Yarn Spinner library.
+- Fixed a bug where the audio assets in the samples weren't being linked correctly resulting in playback errors.
+- Intro Sample: Moved the Character Color view to a new stand-alone object (it's easier to explain how to do this in a tutorial!)
+- `Analyser` no longer ignores non-public methods.
+  - This is now handled during codegen side so we can better log it.
+- `ActionsGenerator` will now generate C# warnings for non-private methods that are attributed as `YarnFunction` or `YarnCommand`.
+- `ActionsGenerator` still logs to a temporary location, but now into a `dev.yarnspinner.logs` folder inside the temporary location.
+- Auto-advancing `LineView`s will no longer attempt to advance dialogue that has been stopped.
+- Actions Registration now dumps generated code into the same temporary folder the logs live in
+- `ActionsGenerator` will now generate C# warnings for incorrectly named methods that are attributed as `YarnFunction` or `YarnCommand`.
+- Fixed a bug where `AudioLineProvider` didn't allow runtime changing of the text locale.
+- Fixed a bug where the Unity Localisation strings tables would have duplicate lines after tagging all lines in a project.
+
+### Removed
+
+- Remove certain items that were previously marked as obsolete:
+  - Obsolete method `DialogueRunner.ResetDialogue`
+  - Obsolete property `YarnFunctionAttribute.FunctionName`
+  - Obsolete property `YarnCommandAttribute.CommandString`
+  - Obsolete method `YarnProject.GetProgram`
+
+## [2.4.1] 2024-01-30
+
+- Version 2.4.1 is the first release of the paid version of Yarn Spinner on the [Unity Asset Store](https://assetstore.unity.com/packages/tools/behavior-ai/yarn-spinner-for-unity-267061) and on [itch.io](https://yarnspinner.itch.io). It's identical to v2.4.0.
+- Yarn Spinner is and will remain free and open source - we also make it available for purchase as an excellent way to support the team.
+- While you're reading, why not consider our [paid add-ons](https://yarnspinner.itch.io), which add some fantastic and easy-to-customise dialogue views?
 
 ## [2.4.0] 2023-11-15
 
